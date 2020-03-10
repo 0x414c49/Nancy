@@ -12,6 +12,11 @@ namespace Nancy.Cookies
     public class NancyCookie : INancyCookie
     {
         /// <summary>
+        /// Backing field for SameSite property, Wheather the cookie is same site
+        /// </summary>
+        private SameSite? sameSite;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NancyCookie"/> class, with
         /// the provided <paramref name="name"/> and <paramref name="value"/>.
         /// </summary>
@@ -30,7 +35,7 @@ namespace Nancy.Cookies
         /// <param name="value">The value of the cookie.</param>
         /// <param name="expires">The expiration date of the cookie. Can be <see langword="null" /> if it should expire at the end of the session.</param>
         public NancyCookie(string name, string value, DateTime expires)
-            : this(name, value, false, false, expires)
+            : this(name, value, false, false, expires, null)
         {
         }
 
@@ -42,7 +47,7 @@ namespace Nancy.Cookies
         /// <param name="value">The value of the cookie.</param>
         /// <param name="httpOnly">Whether the cookie is http only.</param>
         public NancyCookie(string name, string value, bool httpOnly)
-            : this(name, value, httpOnly, false, null)
+            : this(name, value, httpOnly, false, null, null)
         {
         }
 
@@ -55,7 +60,7 @@ namespace Nancy.Cookies
         /// <param name="httpOnly">Whether the cookie is http only.</param>
         /// <param name="secure">Whether the cookie is secure (i.e. HTTPS only).</param>
         public NancyCookie(string name, string value, bool httpOnly, bool secure)
-            : this(name, value, httpOnly, secure, null)
+            : this(name, value, httpOnly, secure, null, null)
         {
         }
 
@@ -68,13 +73,15 @@ namespace Nancy.Cookies
         /// <param name="httpOnly">Whether the cookie is http only.</param>
         /// <param name="secure">Whether the cookie is secure (i.e. HTTPS only).</param>
         /// <param name="expires">The expiration date of the cookie. Can be <see langword="null" /> if it should expire at the end of the session.</param>
-        public NancyCookie(string name, string value, bool httpOnly, bool secure, DateTime? expires)
+        /// <param name="sameSite">The same site attribute of the cookie. Can be <see langword="null" />.</param>
+        public NancyCookie(string name, string value, bool httpOnly, bool secure, DateTime? expires, SameSite? sameSite = null)
         {
             this.Name = name;
             this.Value = value;
             this.HttpOnly = httpOnly;
             this.Secure = secure;
             this.Expires = expires;
+            this.SameSite = sameSite;
         }
 
         /// <summary>
@@ -136,6 +143,27 @@ namespace Nancy.Cookies
         public bool Secure { get; private set; }
 
         /// <summary>
+        /// Wheather the cookie is same site
+        /// </summary>
+        public SameSite? SameSite
+        {
+            get
+            {
+                return sameSite;
+            }
+            set
+            {
+                // Cookies with SameSite=None must also specify Secure, meaning
+                // they require a secure context.
+                // https://web.dev/samesite-cookies-explained/#changes-to-the-default-behavior-without-samesite
+
+                if (value == Cookies.SameSite.None)
+                    Secure = true;
+                sameSite = value;
+            }
+        }
+
+        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>
@@ -167,6 +195,11 @@ namespace Nancy.Cookies
             if (HttpOnly)
             {
                 sb.Append("; HttpOnly");
+            }
+
+            if(SameSite.HasValue)
+            {
+                sb.Append("; samesite=").Append(SameSite.ToString());
             }
 
             return sb.ToString();
