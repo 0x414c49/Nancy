@@ -12,9 +12,4 @@
   <ItemGroup>
     <PackageReference Include="MarkdownSharp" Version="1.13.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="FakeItEasy" Version="6.0.0" />
-    <PackageReference Update="FakeItEasy.Analyzer.CSharp" Version="6.0.0" />
-  </ItemGroup>
 </Project>

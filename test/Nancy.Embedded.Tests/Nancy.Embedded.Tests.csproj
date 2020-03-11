@@ -2,13 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;netcoreapp2.0;net452</TargetFrameworks>
   </PropertyGroup>
-
   <ItemGroup>
     <EmbeddedResource Include="Resources\**\*.*" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="FakeItEasy" Version="6.0.0" />
-    <PackageReference Update="FakeItEasy.Analyzer.CSharp" Version="6.0.0" />
   </ItemGroup>
 </Project>
