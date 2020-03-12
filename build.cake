@@ -280,13 +280,13 @@ Task("Test")
             }
 
             var settings = new ProcessSettings {
-                Arguments = string.Concat("xunit -configuration ", configuration, " -nobuild"),
+                Arguments = string.Concat("test --configuration ", configuration, " --no-build"),
                 WorkingDirectory = project.GetDirectory()
             };
 
             if (IsRunningOnUnix())
             {
-                settings.Arguments.Append(string.Concat("-framework ", netCoreTarget));
+                settings.Arguments.Append(string.Concat("--framework ", netCoreTarget));
             }
 
             Information("Executing tests for " + project.GetFilename() + " with arguments: " + settings.Arguments.Render());
